@@ -30,21 +30,36 @@ public class ReturnGoodsController {
 	@RequestMapping(value="returngoodspage")
 	public void returningOfGoods(@ModelAttribute("goods") Customer c, Map<String,List<String>> map){
 
-		List<String> myList=new ArrayList<>();
-		myList.add("--Select--");
-		myList.add("Damaged Goods");
-		myList.add("Product not matching to product Ordered");
-		myList.add("Delay in Delivery");
-		map.put("returnGoodsReason", myList);		
+
+		List<String> list1 = new ArrayList<>();
+		list1.add("--Select--");
+		list1.add("Exchange Products");
+		list1.add("Return goods and Refund Money");
+		list1.add("Cancel Order");
+		map.put("ExchangeRefund",list1);
+		
+		List<String> list2 = new ArrayList<>();
+		list2.add("--Select--");
+		list2.add("Damaged Goods");
+		list2.add("Product not matching to product Ordered");
+		list2.add("Delay in Delivery");
+		map.put("returnGoodsReason", list2);
+		
+		
 		}
 	
-	@RequestMapping(value="successpage",method=RequestMethod.POST)
+	@RequestMapping(value="success",method=RequestMethod.POST)
 	public ModelAndView goodsReturned(@ModelAttribute("goods")  Customer c, Merchant m){ 
-		String customer_email_Id = c.getCustomer_email_Id();
-		String merchant_email_Id = m.getMerchant_email_Id();
-		int product_Id = c.getProduct_Id();
-		int product_Quantity = c.getProduct_Quantity();
-		String message = returnGoodsService.returnGoods(customer_email_Id, merchant_email_Id, product_Id, product_Quantity);
-		return new ModelAndView("successpage", "details", message);
+		String exchangeStatus = c.getExchangeStatus();
+		String productDescription = c.getProductDescription();
+		String customer_email_Id = c.getCustomerEmailId();
+		String merchant_email_Id = m.getMerchantEmailId();
+		int product_Id = c.getProductId();
+		int product_Quantity = c.getProductQuantity();
+		String message1 = returnGoodsService.returnGoodsCustomer(exchangeStatus, productDescription, customer_email_Id, merchant_email_Id, product_Id, product_Quantity);
+		String message2 = returnGoodsService.returnGoodsMerchant(exchangeStatus, product_Id, product_Quantity); 
+		String message = message1 + "\n" + message2;
+		System.out.println(message);
+		return new ModelAndView("success", "details", message);
 	}
 }

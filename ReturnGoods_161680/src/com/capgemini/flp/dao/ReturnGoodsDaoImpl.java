@@ -1,8 +1,5 @@
 package com.capgemini.flp.dao;
 
-import java.util.Iterator;
-import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
@@ -22,26 +19,69 @@ public class ReturnGoodsDaoImpl implements IReturnGoodsDao {
 	EntityManager entityManager = null;
 
 	@Override
-	public String returnGoods(String customer_email_Id, String merchant_email_Id, int product_Id, int product_Quantity) {
+	public String returnGoodsCustomer(String exchangeStatus, String productDescription, String customer_email_Id, String merchant_email_Id, int product_Id, int product_Quantity) {
 
-		Customer customer = null;
 		String s = null;
 		int newQuantity = 0;
 		try {
-			String jql = "select a from customer_product a where a.customer_email_Id=:email_Id";
+			String jql = "select a from Customer a where a.customerEmailId=:email_Id and a.productId=:product_Id";
 			TypedQuery<Customer> typedQuery = entityManager.createQuery(jql, Customer.class);
 			typedQuery.setParameter("email_Id", customer_email_Id);
-			List<Customer> customerList = typedQuery.getResultList();
-			Iterator<Customer> iterator = customerList.iterator();
-			while(iterator.hasNext())
+			typedQuery.setParameter("product_Id", product_Id);
+			Customer c = typedQuery.getSingleResult();
 			{
-				if(iterator.next().getProduct_Id() == product_Id){
-					if(iterator.next().getProduct_Quantity() >= product_Quantity){
-					newQuantity = iterator.next().getProduct_Id() - product_Quantity;
-					iterator.next().setProduct_Quantity(newQuantity);
-					entityManager.merge(customer);
-					s = receivedGoodsMerchant(merchant_email_Id, product_Id, product_Quantity);
-					} 		
+				if(c.getProductId() == product_Id){
+					if(c.getProductQuantity() >= product_Quantity ){
+						if(exchangeStatus.equals("Exchange Products")){
+					c.setExchangeStatus(exchangeStatus);
+					c.setProductDescription(productDescription);
+					entityManager.merge(c);
+					s = "Awaiting to return the Products to Merchant, You will receive the Products within 5 Working Days";
+						}
+						else if(exchangeStatus.equals("Return goods and Refund Money")||exchangeStatus.equals("Cancel Order")){
+							newQuantity = c.getProductQuantity() - product_Quantity;
+							double amountRefunded = (c.getProduct_Price()*product_Quantity*95)/100;
+							c.setAmountRefunded(amountRefunded);
+							c.setExchangeStatus(exchangeStatus);
+							c.setProductDescription(productDescription);
+							c.setProductQuantity(newQuantity);
+							entityManager.merge(c);
+							s = "Goods are awaiting to be returned to merchant, You will receive the Amount within 5 Working Days";
+						}
+					}
+				}
+			}
+		} catch (PersistenceException e) {
+			// TODO: Log to file
+			s = s +" Goods not Returned by customer";
+		}
+		return s;
+	}
+
+	@Override
+	public String returnGoodsMerchant(String exchangeStatus, int product_Id, int product_Quantity) {
+		String s = null;
+		int newQuantity = 0, newAvailableQuantity = 0;
+		try {
+			String jql = "select b from Merchant b where b.productId=:product_Id";
+			TypedQuery<Merchant> typedQuery = entityManager.createQuery(jql, Merchant.class);
+			typedQuery.setParameter("product_Id", product_Id);
+			Merchant m = typedQuery.getSingleResult();
+			{
+				if(m.getProductId() == product_Id){
+					if(exchangeStatus.equals("Exchange Products")){
+					m.setProductExchanged(exchangeStatus);
+					entityManager.merge(m);
+					s = "Products to be returned are Dispatched";
+				    }
+				else if(exchangeStatus.equals("Return goods and Refund Money")||exchangeStatus.equals("Cancel Order")){
+						newQuantity = m.getNumberOfProductSold() - product_Quantity;
+						newAvailableQuantity = m.getProduct_Quantity() + product_Quantity;
+						m.setNumberOfProductSold(newQuantity);
+						m.setProduct_Quantity(newAvailableQuantity);
+						entityManager.merge(m);
+						s = "Amount Successfully Transferred";
+					}
 				}
 			}
 		} catch (PersistenceException e) {
@@ -49,34 +89,5 @@ public class ReturnGoodsDaoImpl implements IReturnGoodsDao {
 			s = s+" Goods not Returned by customer";
 		}
 		return s;
-	}
-    
-	public String receivedGoodsMerchant(String merchant_email_Id, int product_Id, int product_Quantity){
-	
-		Merchant merchant = null;
-		String s = null; 
-		int newQuantity = 0;
-		try {
-			String jql = "select a from merchant_product a where a.merchant_email_Id=:email_Id";
-			TypedQuery<Merchant> typedQuery = entityManager.createQuery(jql, Merchant.class);
-			typedQuery.setParameter("email_Id", merchant_email_Id);
-			List<Merchant> merchantList = typedQuery.getResultList();
-			Iterator<Merchant> iterator = merchantList.iterator();
-			while(iterator.hasNext())
-			{
-				if(iterator.next().getProduct_Id() == product_Id){
-					if(iterator.next().getProduct_Quantity() >= product_Quantity){
-					newQuantity = iterator.next().getProduct_Id() + product_Quantity;
-					iterator.next().setProduct_Quantity(newQuantity);
-					entityManager.merge(merchant);
-					s = "Products Successfully Returned";
-					} 		
-				}
-			}
-		} catch (PersistenceException e) {
-			// TODO: Log to file
-			s = s+" Goods not Returned to Merchant";
-		}
-		return s;
-	}
+	}	
 }

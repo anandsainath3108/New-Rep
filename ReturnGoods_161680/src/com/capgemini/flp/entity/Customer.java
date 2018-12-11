@@ -1,5 +1,6 @@
 package com.capgemini.flp.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,27 +12,27 @@ import javax.persistence.Table;
 public class Customer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int product_Id;
+	@Column(name="product_Id")
+	private int productId;
 	private String product_Name;
 	private String product_Category;
-	private String product_Description;
+	
+	@Column(name="product_Description")
+	private String productDescription;
 	private double product_Price;
 	private String product_Image;
-	private int product_Quantity;
-	private String customer_email_Id;
+	
+	@Column(name="product_Quantity")
+	private int productQuantity;
+	
+	@Column(name="customer_email_Id")
+	private String customerEmailId;
+	
     private String exchangeStatus;
     private double amountRefunded;
 
 	public Customer() {
 
-	}
-
-	public int getProduct_Id() {
-		return product_Id;
-	}
-
-	public void setProduct_Id(int product_Id) {
-		this.product_Id = product_Id;
 	}
 
 	public String getProduct_Name() {
@@ -49,13 +50,13 @@ public class Customer {
 	public void setProduct_Category(String product_Category) {
 		this.product_Category = product_Category;
 	}
-
-	public String getProduct_Description() {
-		return product_Description;
+    	
+	public String getProductDescription() {
+		return productDescription;
 	}
 
-	public void setProduct_Description(String product_Description) {
-		this.product_Description = product_Description;
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
 	}
 
 	public double getProduct_Price() {
@@ -74,22 +75,6 @@ public class Customer {
 		this.product_Image = product_Image;
 	}
 
-	public int getProduct_Quantity() {
-		return product_Quantity;
-	}
-
-	public void setProduct_Quantity(int product_Quantity) {
-		this.product_Quantity = product_Quantity;
-	}
-
-	public String getCustomer_email_Id() {
-		return customer_email_Id;
-	}
-
-	public void setCustomer_email_Id(String customer_email_Id) {
-		this.customer_email_Id = customer_email_Id;
-	}
-
 	public String getExchangeStatus() {
 		return exchangeStatus;
 	}
@@ -106,5 +91,38 @@ public class Customer {
 		this.amountRefunded = amountRefunded;
 	}
 
+	public int getProductId() {
+		return productId;
+	}
 
+	public void setProductId(int productId) {
+		this.productId = productId;
+	}
+
+	public int getProductQuantity() {
+		return productQuantity;
+	}
+
+	public void setProductQuantity(int productQuantity) {
+		this.productQuantity = productQuantity;
+	}
+
+	public String getCustomerEmailId() {
+		return customerEmailId;
+	}
+
+	public void setCustomerEmailId(String customerEmailId) {
+		this.customerEmailId = customerEmailId;
+	}
+	
+	@Override
+	public String toString() {
+		return "Customer [productId=" + productId + ", product_Name="
+				+ product_Name + ", product_Category=" + product_Category
+				+ ", productDescription=" + productDescription
+				+ ", product_Price=" + product_Price + ", product_Image="
+				+ product_Image + ", productQuantity=" + productQuantity
+				+ ", customerEmailId=" + customerEmailId + ", exchangeStatus="
+				+ exchangeStatus + ", amountRefunded=" + amountRefunded + "]";
+	}
 }

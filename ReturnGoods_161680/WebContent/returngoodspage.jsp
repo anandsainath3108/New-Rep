@@ -13,16 +13,11 @@
 
 <table border="1" align="center">
 
-<fo:form action="successpage" method="POST" modelAttribute="returngoodspage" >
+<fo:form action="success" method="POST" modelAttribute="goods" >
 
 <tr>
 <td>Customer E-Mail Id: </td>
 <td> <fo:input path="customerEmailId" /></td>
-</tr>
-
-<tr>
-<td>Merchant E-Mail Id: </td>
-<td> <fo:input path="merchantEmailId" /></td>
 </tr>
 
 <tr>
@@ -36,9 +31,23 @@
 </tr>
 
 <tr>
-<td>Select the reason for Returning: </td>
-<td> <fo:input path="productDescription" value="${returnGoodsReason}" /></td>
+<td>Do you want to Exchange Goods or Refund Amount ?: </td>
+<td> <fo:select path="exchangeStatus" items="${ExchangeRefund}" ></fo:select>
+</td>
 </tr>
+
+<tr>
+<td>Select the reason for Returning: </td>
+<td> <fo:select path="productDescription" items="${returnGoodsReason}" ></fo:select>
+</td>
+</tr>
+
+<tr>
+<td>
+<input type="submit" value="Save" />
+</td>
+</tr>
+
 </fo:form>
 </table>
 </body>

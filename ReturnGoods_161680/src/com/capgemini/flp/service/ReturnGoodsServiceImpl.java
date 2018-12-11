@@ -15,10 +15,16 @@ public class ReturnGoodsServiceImpl implements IReturnGoodsService {
 	IReturnGoodsDao returnGoodsDao;
 	
 	@Override
-	public String returnGoods(String customer_email_Id,
+	public String returnGoodsCustomer(String exchangeStatus, String productDescription, String customer_email_Id,
 			String merchant_email_Id, int product_Id, int product_Quantity) {
 		// TODO Auto-generated method stub
-		return returnGoodsDao.returnGoods(customer_email_Id, merchant_email_Id, product_Id, product_Quantity);
+		return returnGoodsDao.returnGoodsCustomer(exchangeStatus, productDescription, customer_email_Id, merchant_email_Id, product_Id, product_Quantity);
+	}
+
+	@Override
+	public String returnGoodsMerchant(String exchangeStatus, int product_Id, int product_Quantity) {
+		// TODO Auto-generated method stub
+		return returnGoodsDao.returnGoodsMerchant(exchangeStatus, product_Id, product_Quantity);
 	}
 
 }

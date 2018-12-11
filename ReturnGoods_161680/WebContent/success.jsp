@@ -7,6 +7,6 @@
 <title>Goods Successfully Returned</title>
 </head>
 <body>
-<h1><u>${details} and your money will be refunded within 5 working days</u></h1>
+<h1>${details}</h1>
 </body>
 </html>
